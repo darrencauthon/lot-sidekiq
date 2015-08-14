@@ -41,6 +41,14 @@ describe Lot::Sidekiq::Worker do
 
       end
 
+      it "should convert the hash to a case insenstiive hash" do
+        subscriber.expects(:execute).with do |e, d, i|
+          subscriber.data[the_key.to_sym].must_equal the_value
+        end
+
+        worker.perform the_event_subscriber, the_event, the_data, the_instigator
+      end
+
     end
 
   end
