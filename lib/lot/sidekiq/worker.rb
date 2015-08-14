@@ -9,7 +9,7 @@ module Lot
         event_subscriber.constantize.new.tap do |subscriber|
 
           if instigator
-            subscriber.instigator = instigator.split(':')[0].constantize.find instigator.split(':')[1]
+            subscriber.instigator = Lot.class_from_record_type(instigator.split(':')[0]).find instigator.split(':')[1]
           end
 
           subscriber.event = event

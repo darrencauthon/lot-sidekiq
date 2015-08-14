@@ -81,14 +81,9 @@ describe Lot::Sidekiq::Worker do
       let(:the_real_instigator) { Object.new }
 
       before do
-        the_instigator
-          .stubs(:split)
-          .with(':')
-          .returns [the_record_type, the_record_id]
-
         constantized_record = Object.new
         constantized_record.stubs(:find).with(the_record_id).returns the_real_instigator
-        the_record_type.stubs(:constantize).returns constantized_record
+        Lot.stubs(:class_from_record_type).with(the_record_type).returns constantized_record
       end
 
       it "should instantiate the worker with the instgator" do
