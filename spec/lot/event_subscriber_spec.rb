@@ -3,6 +3,12 @@ require_relative '../spec_helper'
 class OneEventSubscriber < Lot::EventSubscriber
 end
 
+class TwoEventSubscriber < Lot::EventSubscriber
+end
+
+class ThreeEventSubscriber < Lot::EventSubscriber
+end
+
 describe Lot::EventSubscriber do
 
   describe "fire" do
@@ -30,6 +36,19 @@ describe Lot::EventSubscriber do
       it "should call perform_async with the relevant data" do
         Lot::Sidekiq::Worker.expects(:perform_async).with 'OneEventSubscriber', the_event, the_data, "#{the_record_type}:#{the_id}"
         OneEventSubscriber.fire the_event, the_data, the_instigator
+      end
+
+    end
+
+    describe "more examples" do
+
+      let(:the_instigator) { nil }
+
+      it "should still work" do
+        Lot::Sidekiq::Worker.expects(:perform_async).with 'TwoEventSubscriber', the_event, the_data, nil
+        TwoEventSubscriber.fire the_event, the_data, the_instigator
+        Lot::Sidekiq::Worker.expects(:perform_async).with 'ThreeEventSubscriber', the_event, the_data, nil
+        ThreeEventSubscriber.fire the_event, the_data, the_instigator
       end
 
     end

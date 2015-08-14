@@ -4,7 +4,7 @@ module Lot
 
     def self.fire event, data, instigator
       instigator = "#{instigator.record_type}:#{instigator.id}" if instigator
-      Lot::Sidekiq::Worker.perform_async 'OneEventSubscriber', event, data, instigator
+      Lot::Sidekiq::Worker.perform_async self.to_s, event, data, instigator
     end
 
   end
