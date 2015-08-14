@@ -5,16 +5,18 @@ module Lot
     class Worker
       include ::Sidekiq::Worker
 
-      def perform event_subscriber, event, data, instigator
+      def perform *args
+        build_the_event_subscriber(*args).execute
+      end
+
+      def build_the_event_subscriber event_subscriber, event, data, instigator
         event_subscriber.constantize.new.tap do |subscriber|
-
-          if instigator
-            subscriber.instigator = Lot.class_from_record_type(instigator.split(':')[0]).find instigator.split(':')[1]
-          end
-
           subscriber.event = event
-          subscriber.data = HashWithIndifferentAccess.new(data || {})
-          subscriber.execute
+          subscriber.data  = HashWithIndifferentAccess.new(data || {})
+          if instigator
+            record_type, id = instigator.split ':'
+            subscriber.instigator = Lot.class_from_record_type(record_type).find id
+          end
         end
       end
 
