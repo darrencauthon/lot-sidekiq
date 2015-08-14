@@ -8,7 +8,7 @@ module Lot
       def perform event_subscriber, event, data, instigator
         event_subscriber.constantize.new.tap do |subscriber|
           subscriber.event = event
-          subscriber.data = HashWithIndifferentAccess.new(data)
+          subscriber.data = HashWithIndifferentAccess.new(data || {})
           subscriber.execute
         end
       end

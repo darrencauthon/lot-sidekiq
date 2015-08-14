@@ -49,6 +49,26 @@ describe Lot::Sidekiq::Worker do
         worker.perform the_event_subscriber, the_event, the_data, the_instigator
       end
 
+      describe "but the data is nil" do
+        let(:the_data) { nil }
+
+        it "should still get an indifferent hash" do
+
+          subscriber.expects(:execute).with do |e, d, i|
+            subscriber.data.count.must_equal 0
+
+            key,value = random_string, random_string
+            subscriber.data[key] = value
+            subscriber.data[key].must_equal value
+            subscriber.data[key.to_sym].must_equal value
+          end
+
+          worker.perform the_event_subscriber, the_event, the_data, the_instigator
+            
+        end
+
+      end
+
     end
 
   end
