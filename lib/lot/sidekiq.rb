@@ -1,4 +1,6 @@
-require "lot/sidekiq/version"
+require 'sidekiq'
+require_relative "sidekiq/worker"
+require_relative "sidekiq/version"
 
 module Lot
   module Sidekiq
