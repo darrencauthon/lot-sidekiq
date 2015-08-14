@@ -50,6 +50,7 @@ describe Lot::Sidekiq::Worker do
       end
 
       describe "but the data is nil" do
+
         let(:the_data) { nil }
 
         it "should still get an indifferent hash" do
@@ -67,6 +68,45 @@ describe Lot::Sidekiq::Worker do
             
         end
 
+      end
+
+    end
+    j
+    describe "an instigator" do
+
+      let(:the_record_type) { random_string }
+      let(:the_record_id)   { random_string }
+      let(:the_instigator)  { "#{the_record_type}:#{the_record_id}" }
+
+      let(:the_real_instigator) { Object.new }
+
+      before do
+        the_instigator
+          .stubs(:split)
+          .with(':')
+          .returns [the_record_type, the_record_id]
+
+        constantized_record = Object.new
+        constantized_record.stubs(:find).with(the_record_id).returns the_real_instigator
+        the_record_type.stubs(:constantize).returns constantized_record
+      end
+
+      it "should instantiate the worker with the instgator" do
+
+        subscriber.expects(:execute).with do |e, d, i|
+          subscriber.instigator.must_be_same_as the_real_instigator
+        end
+
+        worker.perform the_event_subscriber, the_event, the_data, the_instigator
+
+      end
+
+      it "should convert the hash to a case insenstiive hash" do
+        subscriber.expects(:execute).with do |e, d, i|
+          subscriber.data[the_key.to_sym].must_equal the_value
+        end
+
+        worker.perform the_event_subscriber, the_event, the_data, the_instigator
       end
 
     end
